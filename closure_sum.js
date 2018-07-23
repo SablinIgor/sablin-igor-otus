@@ -8,7 +8,7 @@
  * @version 1.0
  */
 function sum(a) {
-    var count = a;
+    let count = a;
     return function by(b) {
         if (b === undefined) {
             return count;
