@@ -10,7 +10,7 @@
 function sum(a) {
     let count = a;
     return function by(b) {
-        if (b === undefined) {
+        if (arguments.length === 0) {
             return count;
         } else {
             count += b;
@@ -18,3 +18,5 @@ function sum(a) {
         }
     }
 }
+
+console.log(sum(1)(2)(4)())
