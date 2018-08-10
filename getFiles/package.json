@@ -1,0 +1,15 @@
+{
+  "name": "getfiles",
+  "version": "1.0.0",
+  "description": "",
+  "main": "tree.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tree": "node tree.js"
+  },
+  "author": "Sablin I.",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1"
+  }
+}
