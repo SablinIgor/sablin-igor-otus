@@ -5,65 +5,95 @@
  * Результатом работы должен быть объект с массивами `{ files, folders }`.
  * Вызовы файловой системы должны быть асинхронными.
  * Скрипт принимает входной параметр - путь до папки.
- * Если каталог не найден - возвращается undefined
  */
 
 // Подключаем зависимости
-var path = require('path');
-var fs = require('fs');
-var async = require('async');
+const path = require('path');
+const fs = require('fs');
 
 // Определяем переданный путь
-var arg = process.argv[2]
+const arg = process.argv[2]
 
 // Объявление переменной для хранения результата работы скрипта
-var result = null;
+var list = {files: [], folders: [arg]};
 
-// Функция составления объекта, содержащего файлы и директории по переданному пути (см. arg)
-function tree (dirPath, callback) {
+var getPromise = (basePath, readdir) => {
+    return new Promise(function (resolve, reject) {
+        readdir(basePath, function (err, data) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(1);
+            }
+        });
+    });
+}
 
-    fs.readdir(dirPath, function (err, files) {
-        if (err) return callback(err);
+var checkout = (pending, list, callback) => {
+    if (!pending) {
+        return callback(null, list);
+    }
+}
 
-        var filePaths = [];
-        var fileDirs = [];
-        async.eachSeries(files, function (fileName, eachCallback) {
-            var filePath = path.join(dirPath, fileName);
+var addFileToArray = (stats, filePath, list, pending, callback) => {
+    if (stats.isDirectory()) {
+        list.folders.push(filePath);
 
-            fs.stat(filePath, function (err, stat) {
-                if (err) return eachCallback(err);
+        readdir(filePath, function(__err, res) {
+            checkout(--pending, list, callback)
+        });
+    } else {
+        list.files.push(filePath);
+        checkout(--pending, list, callback)
+    }
+}
 
-                if (stat.isDirectory()) {
-                    fileDirs.push(filePath);
-                    tree(filePath, function (err, subDirFiles) {
-                        if (err) return eachCallback(err);
+function readdir(basePath, callback) {
 
-                        filePaths = filePaths.concat(subDirFiles);
-                        eachCallback(null);
+    // оборачиваем в Promise
+    if (!callback) {
+        return getPromise(basePath, readdir);
+    }
+
+    // получаем список объектов текущей директории
+    fs.readdir(basePath, function(err, files) {
+
+        let pending = files.length;
+
+        // Если все директории пройдены - выходим
+        checkout(pending, list, callback)
+
+        // анализируем объекты, находящиеся в текущей директории
+        files.forEach(function(file) {
+
+            var filePath = path.join(basePath, file);
+
+            // заполнение массива с результатом и переход дальше по рекурсии
+            fs.stat(filePath, function(_err, stats) {
+
+                if (stats.isDirectory()) {
+                    list.folders.push(filePath);
+
+                    readdir(filePath, function(__err, res) {
+                        checkout(--pending, list, callback)
                     });
-
                 } else {
-                    if (stat.isFile()) {
-                        filePaths.push(filePath);
-                    }
-                    eachCallback(null);
+                    list.files.push(filePath);
+                    checkout(--pending, list, callback)
                 }
             });
-        }, function (err) {
-            callback(err, filePaths, {"files" : filePaths, "folders": fileDirs});
         });
-
     });
 }
 
-if (arg) {
-    // Вывод результата (отладка)
-    tree(arg, function (err, files, filesAndFolders) {
-       console.log(filesAndFolders);
+readdir('/Users/igor/test/').then(
+    function(resp) {
+        console.log(list)
+    },
+    function(error) {
+        console.error("something wrong... ", error);
+    }
+);
 
-       result = filesAndFolders;
-    });
-}
+exports.list;
 
-// Возвращение объекта с массивами файлов и директорий
-exports.result;
