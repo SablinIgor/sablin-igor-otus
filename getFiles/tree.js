@@ -35,19 +35,6 @@ var checkout = (pending, list, callback) => {
     }
 }
 
-var addFileToArray = (stats, filePath, list, pending, callback) => {
-    if (stats.isDirectory()) {
-        list.folders.push(filePath);
-
-        readdir(filePath, function(__err, res) {
-            checkout(--pending, list, callback)
-        });
-    } else {
-        list.files.push(filePath);
-        checkout(--pending, list, callback)
-    }
-}
-
 function readdir(basePath, callback) {
 
     // оборачиваем в Promise
@@ -86,14 +73,24 @@ function readdir(basePath, callback) {
     });
 }
 
-readdir('/Users/igor/test/').then(
-    function(resp) {
-        console.log(list)
-    },
-    function(error) {
-        console.error("something wrong... ", error);
-    }
-);
+
+try {
+    fs.accessSync(arg);
+
+    list.folders.push(arg);
+
+    readdir(arg).then(
+        function(resp) {
+            console.log(list)
+        },
+        function(error) {
+            console.error("something wrong... ", error);
+        }
+    );
+} catch (err) {
+    console.error('no access!');
+}
+
 
 exports.list;
 
