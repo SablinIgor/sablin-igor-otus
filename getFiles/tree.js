@@ -15,7 +15,7 @@ const fs = require('fs');
 const arg = process.argv[2]
 
 // Объявление переменной для хранения результата работы скрипта
-var list = {files: [], folders: [arg]};
+var list = {files: [], folders: []};
 
 var getPromise = (basePath, readdir) => {
     return new Promise(function (resolve, reject) {
@@ -45,6 +45,8 @@ function readdir(basePath, callback) {
     // получаем список объектов текущей директории
     fs.readdir(basePath, function(err, files) {
 
+        list.folders.push(basePath);
+
         let pending = files.length;
 
         // Если все директории пройдены - выходим
@@ -59,8 +61,6 @@ function readdir(basePath, callback) {
             fs.stat(filePath, function(_err, stats) {
 
                 if (stats.isDirectory()) {
-                    list.folders.push(filePath);
-
                     readdir(filePath, function(__err, res) {
                         checkout(--pending, list, callback)
                     });
@@ -74,11 +74,6 @@ function readdir(basePath, callback) {
 }
 
 
-try {
-    fs.accessSync(arg);
-
-    list.folders.push(arg);
-
     readdir(arg).then(
         function(resp) {
             console.log(list)
@@ -87,9 +82,7 @@ try {
             console.error("something wrong... ", error);
         }
     );
-} catch (err) {
-    console.error('no access!');
-}
+
 
 
 exports.list;
