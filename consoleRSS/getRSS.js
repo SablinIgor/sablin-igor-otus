@@ -2,15 +2,22 @@
  *  Приложение для сохранения RSS
  *  Запрашивает RSS рассылку, парсит XML и сохраняет документы в БД.
  *
- *  Пример: Граббер сайта - который запускаем из командной строки, он читает новости с sports.ru и сохраняет в DB
+ *  Адрес базы данных указывается в переменной окружения DBURL.
+ *  Пример: DBURL="mongodb://user:password@somehost.com:port/dbname"
+ *
+ *  При запуске указывается путь к рассылке
+ *  Пример: npm start http://static.feed.rbc.ru/rbc/logical/footer/news.rss
  */
 
 const RSS_URL = process.argv[2] || "https://www.anekdot.ru/rss/export_a.xml";
 
 const MongoClient = require('mongodb').MongoClient;
 
+// читаем переменную с указанием адреса базы
+require('dotenv-flow').config({ default_node_env: 'development' });
+
 // Connection URL
-const url = 'mongodb://user:superuser2018@ds235022.mlab.com:35022/otus-js-rss';
+const url = process.env.DBURL;
 
 // Database Name
 const dbName = 'otus-js-rss';
