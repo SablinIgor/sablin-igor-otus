@@ -1,0 +1,19 @@
+{
+  "name": "consoleRSS",
+  "version": "1.0.0",
+  "description": "",
+  "main": "getRSS.js",
+  "dependencies": {
+    "dotenv-flow": "^0.1.0",
+    "mongodb": "^3.1.4",
+    "rss-parser": "^3.4.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node getRss.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
