@@ -5,8 +5,6 @@
  *  Пример: Граббер сайта - который запускаем из командной строки, он читает новости с sports.ru и сохраняет в DB
  */
 
-const mongoose = require('mongoose');
-
 const RSS_URL = process.argv[2] || "https://www.anekdot.ru/rss/export_a.xml";
 
 const MongoClient = require('mongodb').MongoClient;
