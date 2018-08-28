@@ -34,6 +34,8 @@ MongoClient.connect(url, function(err, client) {
 
         const collection = db.collection('rss_feed');
 
+        collection.createIndex({"guid":1}, { unique: true });
+
         collection.insertMany(feed.items);
         console.log("Parsing and save complete!")
 
