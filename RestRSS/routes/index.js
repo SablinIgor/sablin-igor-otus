@@ -6,11 +6,11 @@ router.get('/rss', function (req, res) {
 })
 
 router.post('/rss', function (req, res) {
-    res.send("Создание рассылки по RSS");
+    res.status(201).send("Создание рассылки по RSS");
 })
 
 router.get('/rss/:id', function (req, res) {
-    res.send("Показ всех сохраненных из RSS документов");
+    res.send("Показ всех сохраненных из RSS документов: " + req.params.id);
 })
 
 module.exports = router;
