@@ -11,9 +11,10 @@ router.get('/rss', function (req, res) {
 
     const rssCollection = db.get('rss_feed');
 
-    rssCollection.find({}, 'url').then((rss) => {
-        res.send(rss);
-    })
+    rssCollection.find({}, 'url')
+        .then((rss) => {
+            res.send(rss);
+        })
 
 })
 
@@ -49,7 +50,26 @@ router.post('/rss', function (req, res) {
 })
 
 router.get('/rss/:id', function (req, res) {
-    res.send("Показ всех сохраненных из RSS документов: " + req.params.id);
+    console.log("Call GET rss request.")
+
+    const rssCollection = db.get('rss_feed');
+
+    try{
+        rssCollection.findOne({_id: req.params.id})
+            .then((rss) => {
+                console.log("find: " + rss);
+                res.send(rss.documents);
+            })
+            .catch((err) => {
+                console.log(err)
+                res.status(500).send(err.errmsg);
+            })
+    } catch (e) {
+        console.log(
+            "ERROR! Something went wrong: " + e
+        )
+        res.status(500).send("ERROR! Something went wrong: " + e);
+    }
 })
 
 module.exports = router;
