@@ -7,7 +7,14 @@ let Parser = require('rss-parser');
 let parser = new Parser();
 
 router.get('/rss', function (req, res) {
-    res.send("Показ списка всех добавленных RSS рассылок");
+    console.log("Call GET rss request.")
+
+    const rssCollection = db.get('rss_feed');
+
+    rssCollection.find({}, 'url').then((rss) => {
+        res.send(rss);
+    })
+
 })
 
 router.post('/rss', function (req, res) {
@@ -25,11 +32,12 @@ router.post('/rss', function (req, res) {
         const rssCollection = db.get('rss_feed');
 
         rssCollection.insert(newRSS)
-            .then((res) => {
+            .then((value) => {
                 console.log("RSS saved!")
                 res.status(201).send("OK");
             })
             .catch((err) => {
+                console.log(err)
                 console.log(
                     "ERROR! Something went wrong: " + err.errmsg
                 )
