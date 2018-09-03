@@ -18,8 +18,6 @@ app.use(bodyParser.json())
 
 app.use('/api/', restRouter);
 
-const db = require("./database/firebase");
-
 app.listen(3000, () => {
     console.log("Server started on 3000")
 })
